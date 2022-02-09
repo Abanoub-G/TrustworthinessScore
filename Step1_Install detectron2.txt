@@ -1,0 +1,30 @@
+Install Detectron2
+
+- Create a docker container from pytroch using the follwoing command: docker run -t --runtime=nvidia -d --name TGT -v ~/gits:/home -p 5000:80 pytorch/pytorch:latest
+ Replace TGT by what ever naem you want to give to your container
+
+- Make sure the container has started by running this command: docker container start TGT
+
+- Work on the docker on termianl by running this command: docker container exec -it TGT bash
+
+- Run these commands inside the docker terminal: 
+   - apt-get update
+   - apt install build-essential
+   - apt-get install ninja-build
+   - apt-get update
+   - apt-get install -y python3-opencv
+   - pip3 install opencv-python
+   - python3 -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+
+- If you get and error relating to Index out of bounds error, whilst the training data was used before and there is most likely no issue with it, then most likely it is an issue with the CUDA version. Try to change the pytorch, torchvision and cuda and versions inside the docker by doing this: 
+    - conda remove pytorch torchvision cudatoolkit
+    - conda install pytorch==1.10.0 torchvision==0.11.0 cudatoolkit=11.3 -c pytorch
+
+    - Check pytorch conda version:
+       - python3 
+       - import torch
+       - torch.version.cuda
+ 
+- For issues or information on detectron isntallation refer to here https://github.com/facebookresearch/detectron2/blob/main/INSTALL.md
+- Use this link as well to find combination of Pytorch and Cuda versions that detectron2 was tested on/built for.
+
