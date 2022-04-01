@@ -3,3 +3,5 @@ old/OD_cfg.pickle
 old/output/*
 inria.tar
 persons/*
+deepcover/src/MyScripts/model.h5
+deepcover/src/MyScripts/yolov3.weights
