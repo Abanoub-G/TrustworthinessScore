@@ -360,16 +360,22 @@ def GenerateExplanation(image, input_w, input_h):
 		ag_weight_explantation_found_flag = False
 
 
-		step = 1000
+		step = 2000
 		counter = 0
+		reached_end_no_explanation_flag = False
+		print("This is the length of the all of the pixels",len(ag_sorted))
 		while True:
+			print("counter = ",counter)
 			# Get pixels of highest scoring pixels and work your way down the list
 			for counter_2 in range(counter*step, (counter+1)*step):
+				if counter_2 >= len(ag_sorted):
+					reached_end_no_explanation_flag = True
+					print("Added the whole image and couldn't find an explanation")
+					break
 				i, j, score = ag_sorted[counter_2,:]
 				i = int(i)
 				j = int(j)
 				
-		
 				# explained_image_ochiai[0,i,j,:]    = image[0,i,j,:]
 				# explained_image_tarantula[0,i,j,:] = image[0,i,j,:]
 				# explained_image_zoltar[0,i,j,:]    = image[0,i,j,:]
@@ -479,7 +485,15 @@ def GenerateExplanation(image, input_w, input_h):
 
 			# Break if prediction is correct
 			if  ag_explantation_found_flag:# and ag_weight_explantation_found_flag and wong_explantation_found_flag:
-				break 
+				break
+			
+			# Put a break clause here when the we have added all of the pixels and couldn't find anything
+			if reached_end_no_explanation_flag:
+				break
+
+
+
+
 
 			# if  ag_explantation_found_flag and \
 			    # ochiai_explantation_found_flag and \
@@ -492,4 +506,4 @@ def GenerateExplanation(image, input_w, input_h):
 
 			counter += 1
 
-	return explained_image		
+	return explained_image, reached_end_no_explanation_flag		

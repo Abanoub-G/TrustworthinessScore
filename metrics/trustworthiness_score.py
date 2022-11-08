@@ -3,7 +3,88 @@ import imutils
 import cv2
 from yolo.get_yolo_prediction import *
 
-def CalculateTrustworthiness(image, image_cv2, prediction_coordinates, explained_image, array_of_features, array_of_beta, left, right, top, bottom):
+def CalculateTrustworthiness(image, image_cv2, image_summary):
+
+	frame_id = image_summary.image_id
+	TCS_i = float('inf')
+
+	# Check if features speicifaitons were detected and set a flag for that.
+	features_detected_flag = False
+	if len(image_summary.array_of_features) >= 1:
+		features_detected_flag = True
+
+	# Check if predcitions were detected and set a flag for that.
+	predictions_detected_flag = False
+	if len(image_summary.array_of_predicitions) >= 1:
+		predictions_detected_flag = True
+
+	# If pedictions existis but not featrues speiciications or vice versa Trustwothiness score = 0.
+	if predictions_detected_flag == False and features_detected_flag == True: 
+		image_summary.frame_trustworthiness_score = 0
+
+	elif predictions_detected_flag == False and features_detected_flag == True: 
+		image_summary.frame_trustworthiness_score = 0
+
+	# If predicitons and features do not exist.. Make sure that the input data is similar to training data using dissimilarity measures.
+	elif predictions_detected_flag == False and features_detected_flag == False:
+		print("No available data to calculate trustworthiness. Check dissmilarity measure.")
+		print("Make sure that the input data is similar to training data using dissimilarity measures.")
+		pass_dissimlarity_flag = True
+		if pass_dissimlarity_flag == True:
+			# If it passes dissimlarity measures test then trustworthiness_score is high (100%) that nothing is in the frame.
+			image_summary.frame_trustworthiness_score = 0 = 100
+		else:
+			image_summary.frame_trustworthiness_score = 0 = 0
+
+	
+	# If prediciiton and features specificaiton exists then calcuate trsutworhtiness:
+	elif predictions_detected_flag == True and features_detected_flag == True: 
+		
+		# Loop over predictions
+		for C_h in image_summary.array_of_predicitions:
+			# Loop over Features
+			for F_z in image_summary.array_of_features:
+
+
+				# Calcuate the overlap between feature and prediction
+				# If overlap 
+					# Append to features list in predcition class
+					# Set found overlapping prediction flag in feature class to True
+					# Set found overlapping feature flag in prediction class to True
+
+			# Cacluate prediciton trustworthiness score TCS_i_h based on features found.
+
+			# Caclaute overall trustworthiness score TCS_i for frame (image). Min(TCS_i_1, TCS_i_2,... TCS_i_H)
+
+			TCS_i = min(TCS_i,TCS_i_h)
+
+		# Loop over Features 
+			# Check that feature found an overlapping predcition
+			# If found overlapping prediciton flag is False
+				TCS_i = 0
+				# break
+
+
+
+
+
+				# R_i = 100*(num_non_masked/(num_non_masked + num_masked)) # R_i is the percentage of pixels for F_i that are not masked.
+				# R_i_array.append(R_i)
+
+				# if R_i >= R_i_min:
+				# 	a_i = 1
+				# 	detected_features_counter += 1
+				# else:
+				# 	a_i = 0
+
+				# a_i_array.append(a_i)  # where a_i = 1 for R_i >= R_i_min, otherwise a_i = 0
+
+				# prediction_trustworthiness_score += array_of_beta[i] * a_i * R_i
+
+
+
+
+
 	# print("prediction_image = ", prediction_coordinates)
 	# print("explained_image = ", explained_image)
 	# print("array_of_features = ", array_of_features)
@@ -16,22 +97,39 @@ def CalculateTrustworthiness(image, image_cv2, prediction_coordinates, explained
 	# input_w, input_h = 416, 416
 	# image, _, _ = load_image_pixels(image_path, (416, 416))
 
+	print("prediction_coordinates = ",prediction_coordinates)
+	print("prediction_coordinates = ",prediction_coordinates)
 
-	for feature in array_of_features:
-		if len(feature) != 0 :
+
+
+	i             = 0   # Features ID for feature F_i.
+	R_i_array     = []  # Array for R_i calculation.
+	R_i_min       = 10  # minimum percentage of non masked pixels required in a detected feature in order for the main classifier classification and the feature detected to considered as agreeing.
+	
+	a_i_array = [] # array for a_i storage.
+
+	detected_features_counter = 0
+
+	trustworthiness_score = 0
+	print("array_of_features = ", array_of_features)
+	for F_i in array_of_features:
+		print("F_i = ", F_i)
+		print("len(F_i) = ", len(F_i))
+
+		if len(F_i) != 0 :
 
 			# testing transfer
-			left   = feature[0][0]
-			right  = feature[0][2]
-			top    = feature[0][1]
-			bottom = feature[0][3]
+			left   = F_i[0][0]
+			right  = F_i[0][2]
+			top    = F_i[0][1]
+			bottom = F_i[0][3]
 
 			feature_explained_image = explained_image.reshape(416, 416, 3)
 			feature_explained_image = feature_explained_image[top:bottom, left:right,:]
 			# print(explained_image.shape)
 			plt.imshow(feature_explained_image)
 			plt.grid(False)
-			plt.savefig("06_feature_explained_cropped.png")
+			plt.savefig("06_feature_explained_cropped_"+str(i+1)+".png")
 			print("feature_explained_image = ",feature_explained_image)
 
 			# boolArr_not_masked = (explained_image[:,feature[0][0]:feature[0][2],feature[0][1]:feature[0][3],0] != 1) | \
@@ -47,6 +145,37 @@ def CalculateTrustworthiness(image, image_cv2, prediction_coordinates, explained
 
 			print("boolArr_not_masked.sum() = ",boolArr_not_masked.sum())
 			print("boolArr_masked.sum() = ",boolArr_masked.sum())
+
+			num_non_masked = boolArr_not_masked.sum() # Number of non masked pixels
+			num_masked = boolArr_masked.sum()         # Number of masked pixels
+
+			R_i = 100*(num_non_masked/(num_non_masked + num_masked)) # R_i is the percentage of pixels for F_i that are not masked.
+			R_i_array.append(R_i)
+
+			if R_i >= R_i_min:
+				a_i = 1
+				detected_features_counter += 1
+			else:
+				a_i = 0
+
+			a_i_array.append(a_i)  # where a_i = 1 for R_i >= R_i_min, otherwise a_i = 0
+
+			trustworthiness_score += array_of_beta[i] * a_i * R_i
+
+			i += 1
+
+		else:
+			print("Feature not detected")
+			i += 1
+			# del array_of_features[i]
+			# del array_of_beta[i]
+
+
+	if detected_features_counter == 0:
+		trustworthiness_score = 0
+	else:
+		trustworthiness_score = trustworthiness_score/detected_features_counter
+	print("trustworthiness_score = ",trustworthiness_score)
 			# print("np.array(boolArr_not_masked).sum() =",np.array(boolArr_not_masked).sum())
 
 
@@ -125,8 +254,8 @@ def CalculateTrustworthiness(image, image_cv2, prediction_coordinates, explained
 			# cv2.rectangle(explained_image, (int(feature[0][0]), int(feature[0][1])), (int(feature[0][2]), int(feature[0][3])), (0, 0, 230), thickness=2)
 			# cv2.imwrite("2.png", explained_image)
 
-		else:
-			print("Feature not detected")
+		# else:
+		# 	print("Feature not detected")
 		
 
 	# Find which pixels of the explanation are masked

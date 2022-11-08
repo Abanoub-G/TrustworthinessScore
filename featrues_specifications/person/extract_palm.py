@@ -63,7 +63,7 @@ def ExtractPalm(image_path):
 				features_coordinates.append([left, top, right, bottom])
 				cv2.rectangle(annotated_image2, (int(left), int(top)), (int(right), int(bottom)), (0, 0, 230), thickness=2)
 			str_end = image_path[-4:]
-			annotated_image_path = image_path[:-4] + "_palm_annotation" + str_end
+			# annotated_image_path = image_path[:-4] + "_palm_annotation" + str_end
 			# cv2.imwrite('test.jpg', cv2.flip(annotated_image2, 1))
 			annotated_image_path = "05_palm_annotation_cv2.png"
 			cv2.imwrite(annotated_image_path, annotated_image2)#cv2.flip(annotated_image2, 1))
