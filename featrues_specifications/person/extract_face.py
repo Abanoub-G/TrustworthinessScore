@@ -5,7 +5,7 @@ import imutils
 import dlib
 import cv2
 
-from ..featrues_specifications.feature_definition import feature_specification
+from feature_definition import feature_specification
 
 def convert_and_trim_bb(image, rect):
 	# extract the starting and ending (x, y)-coordinates of the
@@ -26,7 +26,7 @@ def convert_and_trim_bb(image, rect):
 	# return our bounding box coordinates
 	return (startX, startY, w, h)
 
-def ExtractFace(image, image_name,results_dir_name):
+def ExtractFace(image, image_name, results_dir_name, image_summary):
 	shape_predictor_file = "../featrues_specifications/person/shape_predictor_68_face_landmarks.dat"
 	# initialize dlib's face detector (HOG-based) and then create
 	# the facial landmark predictor
@@ -54,7 +54,7 @@ def ExtractFace(image, image_name,results_dir_name):
 	boxes = [convert_and_trim_bb(image, r.rect) for r in results]
 	
 	annotated_image = image.copy()
-	features_coordinates = []
+	# features_coordinates = []
 	# loop over the bounding boxes
 	for (x, y, w, h) in boxes:
 		# draw the bounding box on our image
@@ -65,12 +65,12 @@ def ExtractFace(image, image_name,results_dir_name):
 		bottom = y + h
 
 		# features_coordinates.append([left, top, right, bottom])
-		features_coordinates.append(feature_specification(None, 0, left, top, right, bottom))
+		image_summary.array_of_features.append(feature_specification(None, 0, left, top, right, bottom))
 		cv2.rectangle(annotated_image, (int(left), int(top)), (int(right), int(bottom)), (0, 0, 230), thickness=2)
 
 	annotated_image_path = results_dir_name+"04/"+image_name
 	cv2.imwrite(annotated_image_path, annotated_image)#cv2.flip(annotated_image, 1))
-	return features_coordinates
+	# return features_coordinates
 
 	# detect faces in the grayscale image
 	# rects = detector(gray, 1)

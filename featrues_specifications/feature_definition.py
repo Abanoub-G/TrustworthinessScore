@@ -1,6 +1,6 @@
 class feature_specification():
     def __init__(self,feature_id, feature_type_id, left, top, right, bottom):
-        self.id      = 
+        self.id      = feature_id
         self.type_id = feature_type_id
         self.left = left
         self.top  = top
