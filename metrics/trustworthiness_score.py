@@ -24,7 +24,8 @@ def IntersectingRectangle(left1, top1, right1, bottom1,
 
     return left3, top3, right3, bottom3
  
-
+def SquareAreaCalculator(left, top, right, bottom):
+   return abs((right-left)*(top-bottom))
 
 def CalculateTrustworthiness(image, image_cv2, image_summary):
 
