@@ -12,7 +12,7 @@ def IntersectingRectangle(left1, top1, right1, bottom1,
  
     # gives top-right point of intersection rectangle
     right3 = min(right1, right2)
-    top3 = min(top1, top2)
+    top3 = max(top1, top2)
  
     # no intersection
     if (left3 > right3 or bottom3 < top3) :
@@ -25,12 +25,23 @@ def IntersectingRectangle(left1, top1, right1, bottom1,
     return left3, top3, right3, bottom3
  
 def SquareAreaCalculator(left, top, right, bottom):
-   return abs((right-left)*(top-bottom))
+   if left == None:
+   	return None
+   else:
+   	return abs((right-left)*(top-bottom))
 
 def CalculateTrustworthiness(image, image_cv2, image_summary):
 
 	frame_id = image_summary.image_id
+	
+	# Initialise Trustwothiness score for whole image
 	TCS_i = float('inf')
+	
+	# Initialise True-Positive (TP), False-Positive Or  False-Negative (FPFN)
+	TP = 0
+	FP = 0
+	FN = 0
+
 	R_i_min = 10 # Minimum threshold for considering and overlap.
 
 	# Check if features speicifaitons were detected and set a flag for that.
@@ -46,13 +57,15 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 	# If pedictions existis but not featrues speiciications or vice versa Trustwothiness score = 0.
 	if predictions_detected_flag == False and features_detected_flag == True: 
 		image_summary.frame_trustworthiness_score = 0
+		FN = len(image_summary.array_of_features)
 		print("NO PREDICTIONS FOUND: TCS = 0.")
 
 	elif predictions_detected_flag == True and features_detected_flag == False: 
 		image_summary.frame_trustworthiness_score = 0
+		FP = len(image_summary.array_of_predictions)
 		print("NO FEATURES FOUND: TCS = 0.")
 
-	# If predicitons and features do not exist.. Make sure that the input data is similar to training data using dissimilarity measures.
+	# If predicitons and features do not exist. Make sure that the input data is similar to training data using dissimilarity measures.
 	elif predictions_detected_flag == False and features_detected_flag == False:
 		print("No available data to calculate trustworthiness. Check dissmilarity measure.")
 		print("Make sure that the input data is similar to training data using dissimilarity measures.")
@@ -64,7 +77,7 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 			image_summary.frame_trustworthiness_score =  0
 
 	
-	# If prediciiton and features specificaiton exists then calcuate trsutworhtiness:
+	# If prediciiton and features specificaiton exists then calcuate trustworthiness:
 	elif predictions_detected_flag == True and features_detected_flag == True: 
 		print("FOUND PREDICTIONS AND FEATURES: Caluclating TCS ...")
 		# Loop over predictions
@@ -76,46 +89,40 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 			for F_z in image_summary.array_of_features:
 
 				# Find the rectangle coordinates of the overlap between feature and prediction
-				O_left, O_top, O_right, O_bottom = IntersectingRectangle(F_z.left, F_z.top, F_z.right, F_z.bottom,
+				I_left, I_top, I_right, I_bottom = IntersectingRectangle(F_z.left, F_z.top, F_z.right, F_z.bottom,
 																		C_h.left, C_h.top, C_h.right, C_h.bottom)
 				
-				# print("F_z.left = ",F_z.left)
-				# print("F_z.top = ",F_z.top)
-				# print("F_z.right = ",F_z.right)
-				# print("F_z.bottom = ",F_z.bottom)
-
-				# print("C_h.left = ",C_h.left)
-				# print("C_h.top = ",C_h.top)
-				# print("C_h.right = ",C_h.right)
-				# print("C_h.bottom = ",C_h.bottom)
-
-				# print("O_left = ",O_left)
-				# print("O_top = ",O_top)
-				# print("O_right = ",O_right)
-				# print("O_bottom = ",O_bottom)
-				
-				# Count the number of pixels in the overlap
-				F_z_pixels = image.reshape(416, 416, 3)
-				F_z_pixels = F_z_pixels[O_top:O_bottom, O_left:O_right,:]
-				boolArr_not_masked = (F_z_pixels[:,:,0] != 0) | (F_z_pixels[:,:,1] != 0) | (F_z_pixels[:,:,2] != 0)
-				num_pixels_F_z = boolArr_not_masked.sum() # Number of pixels in feature detected (F_z)
+				# # Count the number of pixels in the overlap
+				# F_z_pixels = image.reshape(416, 416, 3)
+				# F_z_pixels = F_z_pixels[I_top:I_bottom, I_left:I_right,:]
+				# boolArr_not_masked = (F_z_pixels[:,:,0] != 0) | (F_z_pixels[:,:,1] != 0) | (F_z_pixels[:,:,2] != 0)
+				# num_pixels_F_z = boolArr_not_masked.sum() # Number of pixels in feature detected (F_z)
 
 				Overlap_C_h_and_F_z_pixels = image.reshape(416, 416, 3)
-				Overlap_C_h_and_F_z_pixels = Overlap_C_h_and_F_z_pixels[O_top:O_bottom, O_left:O_right,:]
-				boolArr_not_masked = (Overlap_C_h_and_F_z_pixels[:,:,0] != 0) | (Overlap_C_h_and_F_z_pixels[:,:,1] != 0) | (Overlap_C_h_and_F_z_pixels[:,:,2] != 0)
-				num_pixels_overlapping = boolArr_not_masked.sum() # Number of shared pixels between feature (F_z) and prediciton (C_h)
+				Overlap_C_h_and_F_z_pixels = Overlap_C_h_and_F_z_pixels[I_top:I_bottom, I_left:I_right,:]
+				# boolArr_not_masked = (Overlap_C_h_and_F_z_pixels[:,:,0] != 0) | (Overlap_C_h_and_F_z_pixels[:,:,1] != 0) | (Overlap_C_h_and_F_z_pixels[:,:,2] != 0)
+				# num_pixels_overlapping = boolArr_not_masked.sum() # Number of shared pixels between feature (F_z) and prediciton (C_h)
 
-				R_i = 100*(num_pixels_overlapping/(num_pixels_F_z)) # R_i is the percentage of pixels for F_z that overlap with prediciton C_h.
+				# R_i = 100*(num_pixels_overlapping/(num_pixels_F_z)) # R_i is the percentage of pixels for F_z that overlap with prediciton C_h.
+				# print("R_i_pixels = ",R_i)
+
+				# R_i is the percentage of pixels for F_z that overlap with prediciton C_h.
+				intersection_area = SquareAreaCalculator(I_left, I_top, I_right, I_bottom)
+				feature_area      = SquareAreaCalculator(F_z.left, F_z.top, F_z.right, F_z.bottom)
+				if intersection_area == None:
+					R_i = 0
+				else:
+					R_i = 100 * intersection_area /feature_area
+				print("R_i_area = ",R_i)
+
+				# input("Kill script here!")
 				
 				# print("num_pixels_F_z =", num_pixels_F_z)
 				# print("num_pixels_overlapping =", num_pixels_overlapping)
-				plt.clf()
-				plt.imshow(Overlap_C_h_and_F_z_pixels)
-				plt.grid(False)
-				plt.savefig("100_feature_cropped.png")
+				
 				
 				# If overlap 
-				if (O_top is not None) and (R_i>= R_i_min):
+				if (I_top is not None) and (R_i>= R_i_min):
 					a_i = 1
 					# Append to features list in predcition class
 					C_h.list_of_overlapping_features.append(F_z)
@@ -124,18 +131,54 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 					C_h.found_overlapping_features_flag =  True
 
 					# Set found overlapping prediction flag in feature class to True
-					F_z.found_overlapping_prediction_falg = True
+					F_z.found_overlapping_prediction_flag = True
 
 					# Cacluate prediciton trustworthiness score TCS_i_h based on features found.
-					TCS_i_h  += F_z.beta * a_i * num_pixels_overlapping
-					print("TCS_i_h = ", TCS_i_h)
+					TCS_i_h  += F_z.beta * a_i * intersection_area
 
+					print("TCS_i_h = ", TCS_i_h)
+					# plt.clf()
+					# plt.imshow(Overlap_C_h_and_F_z_pixels)
+					# plt.grid(False)
+					# plt.savefig("100_feature_cropped.png")
+
+			
+			TCS_i_h_threshold = 1
+			if TCS_i_h > TCS_i_h_threshold:
+				TP+=1
+			else:
+				FP+=1
 
 			C_h.prediction_trustworthiness_score = TCS_i_h
+
+
 			# Caclaute overall trustworthiness score TCS_i for frame (image). Min(TCS_i_1, TCS_i_2,... TCS_i_H)
 			TCS_i = min(TCS_i,TCS_i_h)
 			print("TCS_i = ",TCS_i)
+
+
 		image_summary.frame_trustworthiness_score = TCS_i
+
+		# Count TP and FP
+		# Loop over predictions
+		# for C_h in image_summary.array_of_predictions:
+			# if feature found flag == True: 
+			# TP += 1
+		# else:
+			# it could be a FP or TP 
+
+		# Loop over Features
+		for F_z in image_summary.array_of_features:
+			if F_z.found_overlapping_prediction_flag == False:
+				FN += 1
+
+	print("feature_TP = ",TP)
+	print("feature_FP = ",FP)
+	print("feature__FN = ",FN)
+
+	image_summary.features_TP = TP
+	image_summary.features_FP = FP
+	image_summary.features_FN = FN
 		
 		
 	# 	# Loop over Features 

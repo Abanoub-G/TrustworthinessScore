@@ -11,9 +11,9 @@ class feature_specification():
             # This is a facial feature
             self.beta = 1
 
-        elif feature_num == 1:
+        elif feature_type_id == 1:
             # This is a palm feature
             self.beta = 1
         
         self.assigned_person_id = None
-        self.found_overlapping_prediction_falg = False
+        self.found_overlapping_prediction_flag = False

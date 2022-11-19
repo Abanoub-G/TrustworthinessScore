@@ -19,7 +19,7 @@ from yolo.get_yolo_prediction import *
 # =================================================================================
 # == Results setup
 # =================================================================================
-ExperimentID = 1
+ExperimentID = 2
 results_dir_name = "Results/Experiment" + str(ExperimentID) + "/"
 if not os.path.exists(results_dir_name):
    os.makedirs(results_dir_name)
@@ -35,29 +35,42 @@ if not os.path.exists(results_dir_name+"04/"):
    os.makedirs(results_dir_name+"04/")
 if not os.path.exists(results_dir_name+"05/"):
    os.makedirs(results_dir_name+"05/")
+if not os.path.exists(results_dir_name+"06/"):
+   os.makedirs(results_dir_name+"06/")
+if not os.path.exists(results_dir_name+"07/"):
+   os.makedirs(results_dir_name+"07/")
 
 
 class log():
    def __init__(self):
       self.ExperimentID         = []
-      self.ImageName           = []
+      self.ImageName            = []
       self.ImageID              = []
+      self.TCS_image            = []
+      self.TP_ground            = []
+      self.TP_features          = []
+      self.FP_ground            = []
+      self.FP_features          = [] 
+      self.FN_ground            = []
+      self.FN_features          = []
       self.PredictionID         = []
       self.TCS_prediction       = []
-      self.TCS_image            = []
-      self.Prediction_recall    = []
-      self.Predcition_accuracy  = []
    
 
-   def append(self, ExperimentID, ImageName, ImageID, PredictionID, TCS_prediction, TCS_image, Prediction_recall, Predcition_accuracy):
+   def append(self, ExperimentID, ImageName, ImageID, TCS_image, TP_ground, TP_features, FP_ground, FP_features, FN_ground, FN_features, PredictionID, TCS_prediction,):
       self.ExperimentID.append(ExperimentID)
       self.ImageName.append(ImageName) 
       self.ImageID.append(ImageID)  
+      self.TCS_image.append(TCS_image)
+      self.TP_ground.append(TP_ground)
+      self.TP_features.append(TP_features)
+      self.FP_ground.append(FP_ground)
+      self.FP_features.append(FP_features) 
+      self.FN_ground.append(FN_ground)
+      self.FN_features.append(FN_features)
       self.PredictionID.append(PredictionID)         
       self.TCS_prediction.append(TCS_prediction)
-      self.TCS_image.append(TCS_image)
-      self.Prediction_recall.append(Prediction_recall)    
-      self.Predcition_accuracy.append(Predcition_accuracy) 
+      
       
 
    def write_file(self, output_folder, file_name):
@@ -68,10 +81,10 @@ class log():
 
       file_path = os.path.join(output_folder, file_name)
       with open(file_path, 'w') as log_file: 
-         log_file.write('ExperimentID, ImageName, ImageID, PredictionID, TCS_prediction, TCS_image, Prediction_recall, Predcition_accuracy\n')
-         for i in range(len(self.testNo_array)):
-            log_file.write('%d, %s, %d, %d, %3.3f, %3.3f, %3.3f, %3.3f\n' %\
-               (self.ExperimentID[i],self.ImageID[i], self.PredictionID[i], self.TCS_prediction[i], self.TCS_image[i], self.Prediction_recall[i], self.Predcition_accuracy[i]))
+         log_file.write('ExperimentID,ImageName,ImageID,TCS_image,TP_ground,TP_features,FP_ground,FP_features,FN_ground,FN_features,PredictionID,TCS_prediction\n')
+         for i in range(len(self.ExperimentID)):
+            log_file.write('%d, %s, %d, %3.3f, %d, %d, %d, %d, %d, %d, %d, %3.3f\n' %\
+               (self.ExperimentID[i],self.ImageName[i], self.ImageID[i], self.TCS_image[i], self.TP_ground[i], self.TP_features[i], self.FP_ground[i], self.FP_features[i], self.FN_ground[i], self.FN_features[i], self.PredictionID[i], self.TCS_prediction[i]))
       print('Log file SUCCESSFULLY generated!')
 
 
@@ -131,7 +144,7 @@ def IntersectingRectangle(left1, top1, right1, bottom1,
 
    # gives top-right point of intersection rectangle
    right3 = min(right1, right2)
-   top3 = min(top1, top2)
+   top3 = max(top1, top2)
 
    # no intersection
    if (left3 > right3 or bottom3 < top3) :
@@ -162,7 +175,7 @@ def IoU_calculator(left1, top1, right1, bottom1,
       union_area        = square1_area + square2_area - intersection_area
       IoU = (intersection_area) / (union_area)  # We smooth our devision to avoid 0/0
 
-   return IoU
+   return IoU, left3, top3, right3, bottom3
 
 # =================================================================================
 # == Import dataset
@@ -170,9 +183,14 @@ def IoU_calculator(left1, top1, right1, bottom1,
 dataset_dir = "../datasets/INRIAPerson/Test/pos/"#
 dataset_ground_truth_dir = "../datasets/INRIAPerson/Test/annotations/"
 
+dataset_dir = "../datasets/INRIAPerson_original/Test/pos/"
+dataset_ground_truth_dir = "../datasets/INRIAPerson_original/Test/annotations/"
+
+
 # Loop over images
 image_summary_array = []
 image_counter = 0
+# for image_name in range(1):
 for image_name in os.listdir(dataset_dir):
    image_counter += 1
    # image_name = "crop_000027.png"
@@ -181,7 +199,13 @@ for image_name in os.listdir(dataset_dir):
    # image_name = "person_272.png"
    # image_name = "crop_000009.png"
    # image_name = "crop001511.png"
-   image_name = "crop001514.png"
+   # image_name = "crop001514.png"
+   # image_name = "crop001590.png"
+   # image_name = "person_019.jpg"
+
+   print("==================")
+   print("image_name = ", image_name)
+   print("===================")
    image_path = dataset_dir + image_name
 
    image_summary = image_summary_class(image_name, image_counter)
@@ -263,14 +287,13 @@ for image_name in os.listdir(dataset_dir):
             thickness              = 2
             lineType               = 2
 
-            cv2.putText(annotated_image,label, 
-               (x1,y1), 
-               font, 
-               fontScale,
-               fontColor,
-               thickness,
-               lineType)
-   # cv2.imwrite("02_prediction_cv2.png", annotated_image)#cv2.flip(annotated_image, 1))
+            # cv2.putText(annotated_image,label, 
+            #    (x1,y1), 
+            #    font, 
+            #    fontScale,
+            #    fontColor,
+            #    thickness,
+            #    lineType)
    annotated_image_path = results_dir_name+"02/"+image_name
    cv2.imwrite(annotated_image_path, annotated_image)
    print("image_summary.array_of_predictions = ",image_summary.array_of_predictions)
@@ -324,7 +347,7 @@ for image_name in os.listdir(dataset_dir):
    print("number_of_persons_ground_truth = ",number_of_persons_ground_truth)
 
    # Loop over the ground truth predcitions and extract boundary boxes.
-   annotated_image = image_cv2.copy()
+   # annotated_image = image_cv2.copy()
    for temp_j in range(number_of_persons_ground_truth):
       flag_left_found   = False
       flag_top_found    = False
@@ -447,7 +470,7 @@ for image_name in os.listdir(dataset_dir):
    FP = 0
    FN = 0
 
-   IoU_threshold = 0.7
+   IoU_threshold = 0.4#0.7
 
    # Loop over predictions
    for current_person_prediction in image_summary.array_of_predictions:
@@ -471,13 +494,17 @@ for image_name in os.listdir(dataset_dir):
          annotation_bottom = current_person_annotation.bottom
          
          # Calculate Intersection over Union (IoU)
-         IoU =  IoU_calculator(prediction_left, prediction_top, prediction_right, prediction_bottom,
+         IoU, I_left, I_top, I_right, I_bottom =  IoU_calculator(prediction_left, prediction_top, prediction_right, prediction_bottom,
                               annotation_left, annotation_top, annotation_right, annotation_bottom)
 
          print("IoU = ", IoU)
          if IoU >= IoU_threshold:
             current_person_prediction.G_flag = True
             TP += 1 
+            # Draw rectangle 
+            # cv2.rectangle(annotated_image, (int(I_left), int(I_top)), (int(I_right), int(I_bottom)), (230, 0, 0), thickness=2)
+            # annotated_image_path = results_dir_name+"06/"+image_name
+            # cv2.imwrite(annotated_image_path, annotated_image)
 
       # After looping over all ground truths
       if current_person_prediction.G_flag == False:
@@ -496,7 +523,7 @@ for image_name in os.listdir(dataset_dir):
    image_summary.ground_turth_FP = FP
    image_summary.ground_turth_FN = FN
    
-   # Test this code
+   
 
    
    # =================================================================================
@@ -504,9 +531,9 @@ for image_name in os.listdir(dataset_dir):
    # =================================================================================
 
    # Extract features: Face
-   annotated_image = image_cv2.copy()
+   # annotated_image = image_cv2.copy()
    # face_features_coordinates = ExtractFace(image_summary, annotated_image,image_name,results_dir_name)
-   ExtractFace(annotated_image,image_name,results_dir_name, image_summary)
+   ExtractFace(image_cv2, annotated_image,image_name,results_dir_name, image_summary)
    print("image_summary.array_of_features = ",image_summary.array_of_features)
    
    # face_features_coordinates=[]
@@ -514,6 +541,8 @@ for image_name in os.listdir(dataset_dir):
 
 
    # Extract features: Palm
+   ExtractPalm(image_cv2, annotated_image,image_name,results_dir_name, image_summary)
+   
    # palm_features_coordinates = []# ExtractPalm(image_path)
    # print("palm_features_coordinates = ",palm_features_coordinates)
 
@@ -533,17 +562,11 @@ for image_name in os.listdir(dataset_dir):
    # == Trustworthiness Cacluation
    # =================================================================================
    CalculateTrustworthiness(image, image_cv2, image_summary)
-
-   Follow a similar concept to what I ahve done up in the groudn truth part.
-   Add to trustworthiness score code 
    
-   image_summary.features_TP = TP
-   image_summary.features_FP = FP
-   image_summary.features_FN = FN
    # input(str("Trustworthiness calcuated for "+str(image_name)+". Press eneter for next image."))
 
    image_summary_array.append(image_summary)
-   input("Kill code here")
+   # input("Kill code here")
 
 
 
@@ -553,15 +576,26 @@ for image_name in os.listdir(dataset_dir):
 # Save results in a log file
 experiment_logs = log()
 for current_image in image_summary_array:
+   ImageID             = current_image.image_id
+   ImageName           = current_image.image_name
+   TCS_image           = current_image.frame_trustworthiness_score
+   
+   TP_ground           = current_image.ground_turth_TP
+   FP_ground           = current_image.ground_turth_FP
+   FN_ground           = current_image.ground_turth_FN
+
+   TP_features         = current_image.features_TP
+   FP_features         = current_image.features_FP
+   FN_features         = current_image.features_FN
+
    for current_person in current_image.array_of_predictions:
-      ImageID             = current_image.image_id
-      ImageName           = current_image.image_name
+      
       PredictionID        = current_person.id
       TCS_prediction      = current_person.prediction_trustworthiness_score
-      TCS_image           = current_image.frame_trustworthiness_score
+      
       # Prediction_recall   = 
       # Predcition_accuracy = 
-      experiment_logs.append(ExperimentID, ImageName, ImageID, PredictionID, TCS_prediction, TCS_image, Prediction_recall, Predcition_accuracy)
+      experiment_logs.append(ExperimentID, ImageName, ImageID, TCS_image, TP_ground, TP_features, FP_ground, FP_features, FN_ground, FN_features, PredictionID, TCS_prediction)
 
-logs_file_name = "experiment_logs" + str(ExperimentID)+".txt"
+logs_file_name = "Logs" + str(ExperimentID)+".csv"
 experiment_logs.write_file(results_dir_name, logs_file_name)
