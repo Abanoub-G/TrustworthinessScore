@@ -14,6 +14,10 @@ class feature_specification():
         elif feature_type_id == 1:
             # This is a palm feature
             self.beta = 1
+
+        elif feature_type_id == 2:
+            # This is a legs feature
+            self.beta = 1
         
         self.assigned_person_id = None
         self.found_overlapping_prediction_flag = False

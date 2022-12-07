@@ -16,7 +16,7 @@ def IntersectingRectangle(left1, top1, right1, bottom1,
  
     # no intersection
     if (left3 > right3 or bottom3 < top3) :
-        print("No intersection")
+        # print("No intersection")
         left3   = None
         top3    = None
         right3  = None
@@ -58,17 +58,17 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 	if predictions_detected_flag == False and features_detected_flag == True: 
 		image_summary.frame_trustworthiness_score = 0
 		FN = len(image_summary.array_of_features)
-		print("NO PREDICTIONS FOUND: TCS = 0.")
+		# print("NO PREDICTIONS FOUND: TCS = 0.")
 
 	elif predictions_detected_flag == True and features_detected_flag == False: 
 		image_summary.frame_trustworthiness_score = 0
 		FP = len(image_summary.array_of_predictions)
-		print("NO FEATURES FOUND: TCS = 0.")
+		# print("NO FEATURES FOUND: TCS = 0.")
 
 	# If predicitons and features do not exist. Make sure that the input data is similar to training data using dissimilarity measures.
 	elif predictions_detected_flag == False and features_detected_flag == False:
-		print("No available data to calculate trustworthiness. Check dissmilarity measure.")
-		print("Make sure that the input data is similar to training data using dissimilarity measures.")
+		# print("No available data to calculate trustworthiness. Check dissmilarity measure.")
+		# print("Make sure that the input data is similar to training data using dissimilarity measures.")
 		pass_dissimlarity_flag = True
 		if pass_dissimlarity_flag == True:
 			# If it passes dissimlarity measures test then trustworthiness_score is high (100%) that nothing is in the frame.
@@ -79,10 +79,10 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 	
 	# If prediciiton and features specificaiton exists then calcuate trustworthiness:
 	elif predictions_detected_flag == True and features_detected_flag == True: 
-		print("FOUND PREDICTIONS AND FEATURES: Caluclating TCS ...")
+		# print("FOUND PREDICTIONS AND FEATURES: Caluclating TCS ...")
 		# Loop over predictions
 		for C_h in image_summary.array_of_predictions:
-			print("=======================================================")
+			# print("=======================================================")
 			# Reset trustworthiness_score for predcition
 			TCS_i_h = 0
 			# Loop over Features
@@ -113,7 +113,7 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 					R_i = 0
 				else:
 					R_i = 100 * intersection_area /feature_area
-				print("R_i_area = ",R_i)
+				# print("R_i_area = ",R_i)
 
 				# input("Kill script here!")
 				
@@ -136,14 +136,14 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 					# Cacluate prediciton trustworthiness score TCS_i_h based on features found.
 					TCS_i_h  += F_z.beta * a_i * intersection_area
 
-					print("TCS_i_h = ", TCS_i_h)
+					# print("TCS_i_h = ", TCS_i_h)
 					# plt.clf()
 					# plt.imshow(Overlap_C_h_and_F_z_pixels)
 					# plt.grid(False)
 					# plt.savefig("100_feature_cropped.png")
 
 			
-			TCS_i_h_threshold = 1
+			TCS_i_h_threshold = 100
 			if TCS_i_h > TCS_i_h_threshold:
 				TP+=1
 			else:
@@ -154,7 +154,7 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 
 			# Caclaute overall trustworthiness score TCS_i for frame (image). Min(TCS_i_1, TCS_i_2,... TCS_i_H)
 			TCS_i = min(TCS_i,TCS_i_h)
-			print("TCS_i = ",TCS_i)
+			# print("TCS_i = ",TCS_i)
 
 
 		image_summary.frame_trustworthiness_score = TCS_i

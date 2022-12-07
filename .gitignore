@@ -5,9 +5,13 @@ models/yolo/model.h5
 
 featrues_specifications/person/shape_predictor_68_face_landmarks.dat
 featrues_specifications/person/shape_predictor_68_face_landmarks.zip
+featrues_specifications/person/yolov5/runs/detect/*
+featrues_specifications/person/yolov5/runs/val/*
 featrues_specifications/old/*
 
 datasets/*
 
 experiments/*
+featrues_specifications/person/yolov5/*
+*.png
 

@@ -68,8 +68,13 @@ def ExtractFace(image, annotated_image, image_name, results_dir_name, image_summ
 		# draw the bounding box on our image
 		cv2.rectangle(annotated_image, (int(left), int(top)), (int(right), int(bottom)), (230, 0, 230), thickness=2)
 
-	annotated_image_path = results_dir_name+"04/"+image_name
-	cv2.imwrite(annotated_image_path, annotated_image)#cv2.flip(annotated_image, 1))
+	# annotated_image_path = results_dir_name+"04/"+image_name
+	# cv2.imwrite(annotated_image_path, annotated_image)#cv2.flip(annotated_image, 1))
+	
+
+
+
+
 	# return features_coordinates
 
 	# detect faces in the grayscale image

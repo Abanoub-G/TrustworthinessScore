@@ -18,7 +18,7 @@ def ExtractPalm(image, annotated_image, image_name, results_dir_name, image_summ
 		# Convert the BGR image to RGB before processing.
 		results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-		print("results.multi_hand_landmarks = ", results.multi_hand_landmarks)
+		# print("results.multi_hand_landmarks = ", results.multi_hand_landmarks)
 		if results.multi_hand_landmarks is not None:
 			for hand_landmarks in results.multi_hand_landmarks:
 				# print('hand_landmarks:', hand_landmarks)
@@ -55,8 +55,8 @@ def ExtractPalm(image, annotated_image, image_name, results_dir_name, image_summ
 				image_summary.array_of_features.append(feature_specification(None, 1, left, top, right, bottom))
 				cv2.rectangle(annotated_image, (int(left), int(top)), (int(right), int(bottom)), (230, 0, 230), thickness=2)
 	
-	annotated_image_path = results_dir_name+"07/"+image_name
-	cv2.imwrite(annotated_image_path, annotated_image)
+	# annotated_image_path = results_dir_name+"07/"+image_name
+	# cv2.imwrite(annotated_image_path, annotated_image)
 			
 
 
