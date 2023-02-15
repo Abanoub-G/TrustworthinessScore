@@ -11,7 +11,7 @@ featrues_specifications/old/*
 
 datasets/*
 
-experiments/*
+experiments/Results/old/*
 featrues_specifications/person/yolov5/*
-*.png
+
 
