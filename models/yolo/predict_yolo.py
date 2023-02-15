@@ -23,7 +23,7 @@ from yolo.get_yolo_prediction import *
 
 # define our new photo
 # photo_filename = 'person_001.jpg'#'person_069.jpg' # 'zebra.jpg' 
-def YoloPredict(image, input_w, input_h):
+def YoloPredict(image, input_w, input_h,min_class_threshold):
 	# load yolov3 model
 	model = load_model('../models/yolo/model.h5')
 	# define the expected input shape for the model
@@ -42,7 +42,7 @@ def YoloPredict(image, input_w, input_h):
 	anchors = [[116,90, 156,198, 373,326], [30,61, 62,45, 59,119], [10,13, 16,30, 33,23]]
 
 	# define the probability threshold for detected objects
-	class_threshold = 0.6
+	class_threshold = min_class_threshold
 	boxes = list()
 	for i in range(len(yhat)):
 		# decode the output of the network

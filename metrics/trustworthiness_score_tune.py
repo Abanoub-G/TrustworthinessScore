@@ -112,6 +112,8 @@ def CalculateTrustworthiness(image, image_cv2, image_summary):
 
 					C_h.list_of_overlapping_features_type_id.append(F_z.type_id)
 
+					C_h.list_of_overlapping_features_id.append(F_z.id)
+
 					# Set found overlapping feature flag in prediction class to True
 					C_h.found_overlapping_features_flag =  True
 
