@@ -692,6 +692,53 @@
       \endverb
       \keyw{Machine Learning (cs.LG),FOS: Computer and information sciences,FOS: Computer and information sciences}
     \endentry
+    \entry{harper2021safety}{article}{}
+      \name{author}{6}{}{%
+        {{hash=9f859e99551310b04c9b000ab67caa21}{%
+           family={Harper},
+           familyi={H\bibinitperiod},
+           given={Christopher},
+           giveni={C\bibinitperiod}}}%
+        {{hash=e464ccfad93f539e8d83670bfd2ccdaa}{%
+           family={Chance},
+           familyi={C\bibinitperiod},
+           given={Greg},
+           giveni={G\bibinitperiod}}}%
+        {{hash=5198bb7730a55616e36e3b65e728d3bc}{%
+           family={Ghobrial},
+           familyi={G\bibinitperiod},
+           given={Abanoub},
+           giveni={A\bibinitperiod}}}%
+        {{hash=d1fa099732be5537f3b0e4550550cc49}{%
+           family={Alam},
+           familyi={A\bibinitperiod},
+           given={Saquib},
+           giveni={S\bibinitperiod}}}%
+        {{hash=efb7b9c6d783bb5c01d7d5b162640cd0}{%
+           family={Pipe},
+           familyi={P\bibinitperiod},
+           given={Tony},
+           giveni={T\bibinitperiod}}}%
+        {{hash=7c6ad14b250cf6c8ba8e92e4ad94f196}{%
+           family={Eder},
+           familyi={E\bibinitperiod},
+           given={Kerstin},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{90148c5c5000637d6823361f6d8bab88}
+      \strng{fullhash}{90148c5c5000637d6823361f6d8bab88}
+      \strng{bibnamehash}{90148c5c5000637d6823361f6d8bab88}
+      \strng{authorbibnamehash}{90148c5c5000637d6823361f6d8bab88}
+      \strng{authornamehash}{90148c5c5000637d6823361f6d8bab88}
+      \strng{authorfullhash}{90148c5c5000637d6823361f6d8bab88}
+      \field{sortinit}{H}
+      \field{sortinithash}{6db6145dae8dc9e1271a8d556090b50a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2111.04611}
+      \field{title}{Safety Validation of Autonomous Vehicles using Assertion Checking}
+      \field{year}{2021}
+    \endentry
     \entry{hawkins2021guidance}{article}{}
       \name{author}{6}{}{%
         {{hash=49aae173103551743b8e73e2ceeeb8d6}{%
@@ -1755,6 +1802,44 @@
       \field{type}{techreport}
       \field{year}{2016}
     \endentry
+    \entry{thiebes2021trustworthy}{article}{}
+      \name{author}{3}{}{%
+        {{hash=e3a74722a7e13a9b0978a61627c5148e}{%
+           family={Thiebes},
+           familyi={T\bibinitperiod},
+           given={Scott},
+           giveni={S\bibinitperiod}}}%
+        {{hash=58de59d86ca1eff7d2b803c4ce9d152d}{%
+           family={Lins},
+           familyi={L\bibinitperiod},
+           given={Sebastian},
+           giveni={S\bibinitperiod}}}%
+        {{hash=0aace507a7fdfb4a9fb1cef030e81151}{%
+           family={Sunyaev},
+           familyi={S\bibinitperiod},
+           given={Ali},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{2d4964dd36a3a589439a809b224c7bea}
+      \strng{fullhash}{2d4964dd36a3a589439a809b224c7bea}
+      \strng{bibnamehash}{2d4964dd36a3a589439a809b224c7bea}
+      \strng{authorbibnamehash}{2d4964dd36a3a589439a809b224c7bea}
+      \strng{authornamehash}{2d4964dd36a3a589439a809b224c7bea}
+      \strng{authorfullhash}{2d4964dd36a3a589439a809b224c7bea}
+      \field{sortinit}{T}
+      \field{sortinithash}{51f9faf24c60c62ca764a77f78cf5666}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Electronic Markets}
+      \field{title}{Trustworthy artificial intelligence}
+      \field{volume}{31}
+      \field{year}{2021}
+      \field{pages}{447\bibrangedash 464}
+      \range{pages}{18}
+    \endentry
     \entry{tran2022plex}{article}{}
       \true{moreauthor}
       \true{morelabelname}
@@ -1823,6 +1908,48 @@
       \field{journaltitle}{arXiv preprint arXiv:2207.07411}
       \field{title}{Plex: Towards reliability using pretrained large model extensions}
       \field{year}{2022}
+    \endentry
+    \entry{9142644}{inproceedings}{}
+      \name{author}{4}{}{%
+        {{hash=691e6fc1de5360eb8073e125ec40f666}{%
+           family={Wickramasinghe},
+           familyi={W\bibinitperiod},
+           given={Chathurika\bibnamedelima S.},
+           giveni={C\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=716540271786e33be987c15eaa599776}{%
+           family={Marino},
+           familyi={M\bibinitperiod},
+           given={Daniel\bibnamedelima L.},
+           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=b2a1622f2b758bd392c4004360014bef}{%
+           family={Grandio},
+           familyi={G\bibinitperiod},
+           given={Javier},
+           giveni={J\bibinitperiod}}}%
+        {{hash=cf84f0e168933e459a4dece1d450b65a}{%
+           family={Manic},
+           familyi={M\bibinitperiod},
+           given={Milos},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \strng{fullhash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \strng{bibnamehash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \strng{authorbibnamehash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \strng{authornamehash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \strng{authorfullhash}{cb56bba7779bd12bcb48e4e63a1e84a1}
+      \field{sortinit}{W}
+      \field{sortinithash}{1af34bd8c148ffb32de1494636b49713}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2020 13th International Conference on Human System Interaction (HSI)}
+      \field{title}{Trustworthy AI Development Guidelines for Human System Interaction}
+      \field{year}{2020}
+      \field{pages}{130\bibrangedash 136}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.1109/HSI49210.2020.9142644
+      \endverb
     \endentry
     \entry{Wing2021}{article}{}
       \name{author}{1}{}{%
