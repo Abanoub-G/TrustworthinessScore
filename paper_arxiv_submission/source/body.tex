@@ -21,7 +21,9 @@ This is achieved by monitoring and checking for overlaps of \textit{features spe
 The term features specifications is used here to refer to unique distinctive properties that make up a classification class.
 %  
 %
-The TS metric can serve as an online monitoring tool to improve the evaluation of CNNs trustworthy predictions during operation, whilst also providing a transparent justification for accrediting trustworthiness to predictions. We also explore if a modification of the TS metric can be used to calculate a suspiciousness score (SS), which may help in the detection of suspicious frames where False Negatives exist.
+The TS metric can serve as an online monitoring tool to improve the evaluation of CNNs trustworthy predictions during operation, whilst also providing a transparent justification for accrediting trustworthiness to predictions. 
+%
+We also explore if using the underlying idea of the trustworthiness score in a prediction can be used to calculate a suspiciousness score (SS) in the overall input frame, which may help in the detection of suspicious frames where false negatives exist.
 % nd assist with miss-classifications detection. 
 %
 % This may serve as an assistant to the ground truth monitor (human) in monitoring, or substitute the ground truth where it is infeasible to have a human ground truth monitor.
@@ -154,7 +156,7 @@ We distinguish between two types of classifiers targeted at different types of o
 %
 For the former, different techniques for generating interpretable explanations for object classification can be used and are available in the literature e.g. GradCam~\cite{Selvaraju2020}, LIME~\cite{Ribeiro2016}, SHAP~\cite{Lundberg2017}, Extremal~\cite{Fong2019}, DeepCover~\cite{Sun2020}. 
 %
-All of these methods are developed for generating explanations for classifiers that output only a label.% (i.e. without a bounding box localising the classified object). 
+All of these methods are developed for generating explanations for classifiers that output only a label. % (i.e. without a bounding box localising the classified object). 
 %
 For the latter type of object recognition, the pixels within the bounding box can be considered as the explanation, e.g.\ $N_{i,1}\equiv E_{i,1}$.
 %
@@ -232,30 +234,46 @@ Alternatively, one can utilise other CNN models to learn complex features specif
 The trustworthiness score for a given prediction $N_{i,y}$ is calculated using equation~\ref{eq:TS}, where $y\in\{1,..,Y_i\}$. 
 %
 $R_{i,y,z}$ represents the intersection area between detected feature $F_{i,z}$ and explanation $E_{i,y}$ for prediction $N_{i,y}$. 
-
-\begin{equation}
-\label{eq:TS}
-    TS_{i,y} = \sideset{}{}\sum_{z=1}^{Z_i} \beta_z \cdot a_{y,z} \cdot R_{i,y,z}%\frac{\sideset{}{}\sum_{z=1}^{Z_i} \beta_z \cdot a_z \cdot R_{i,z}}{Z_i} 
-\end{equation}
-
-
-
+%
 A trustworthy prediction is shown by the prediction having overlapping features specifications that make the trustworthiness score surpass the set \textit{trustworthiness score threshold}. 
 % having  the detected features specifications overlapping with the prediction. 
 %
 A prediction and a feature count as overlapping if $R_{i,y,z} \geq R_{lim}$. We use $a_{y,z}$ as a boolean switch to indicate if this condition is satisfied or not. $\beta_z$ is included in our equation to act as a hyperparameter for weighing the contribution from different types of detected features specifications.
 
-Determining $R_{lim}$ depends on the application and type of features specification being monitored. Formalising a method for determining $R_{lim}$ can be scope for future work. In our experimentation we have set $R_{lim}$ to $70\%$, as through visual assessment of the outputted bounding boxes (see Figure~\ref{summary_pics}) we deem this to be sufficient to confirm an overlap exists.    
+Determining $R_{lim}$ depends on the application and type of features specification being monitored. Formalising a method for determining $R_{lim}$ can be scope for future work. In our experimentation we have set $R_{lim}$ to $70\%$, as through visual assessment of the outputted bounding boxes (see Figure~\ref{summary_pics}) we deem this to be sufficient to confirm an overlap exists.   
+\begin{equation}
+\label{eq:TS}
+    TS_{i,y} = \sideset{}{}\sum_{z=1}^{Z_i} \beta_z \cdot a_{y,z} \cdot R_{i,y,z}%\frac{\sideset{}{}\sum_{z=1}^{Z_i} \beta_z \cdot a_z \cdot R_{i,z}}{Z_i} 
+\end{equation}
 
-\subsection{Suspiciousness Score}
-We speculate that the trustworthiness score can be modified to detect the suspiciousness in a frame. A frame is referred to as being suspicious if it contains false negatives from the predictions made by the main classifier. 
+\subsection{Suspiciousness Score (SS)}
+We also introduce a suspiciousness score calculated on the overall frame level instead on each prediction. 
+% 
+We refer to a frame as suspicious if it contains false negatives. % from the predictions made by the main classifier.
+%
+% We also introduce a suspiciousness score using the idea behind the trustworthiness score, where trustworthiness is credited if expected features specifications are identified in a prediction. 
+%
+% We refer to a frame as suspicious if it contains false negatives from the predictions made by the main classifier. 
+%
+% Note that the suspiciousness score is calculated on the overall frame level instead on each prediction. 
+%
+Using the suspiciousness score, suspiciousness is credited to a frame if the frame contains a large portion of the image with predictions below the model confidence threshold i.e. $MC < MC_T$.
+%
+We speculate that this gives an indication that the model has high uncertainty in the objects existing in the frame, therefore false negatives in the frame are likely to exist. 
 %
 %
-We modify the TS metric to yield the suspiciousness score (SS) shown by equation~\ref{eq:SS}. 
+% The goal is to identify if the overall frame is suspicious, therefore predictions in the frame should not be relied on.
+%
+% We speculate that the trustworthiness score can be modified to detect the suspiciousness in a frame. A frame is referred to as being suspicious if it contains false negatives from the predictions made by the main classifier. 
+%
+%
+The suspiciousness score (SS) is shown by equation~\ref{eq:SS}. 
 %
 In this case the SS loops over predictions $\{M_{i,1},..., M_{i,J_i}\}$ and sums up the area $R_{i,j}$ of the bounding box for each prediction $M_{i,j}$, where $j\in\{1,..,J_i\}$. 
 %
 If SS surpasses some selected \textit{suspiciousness score threshold} then the frame is suspicious. 
+%
+The SS is complimentary to TS, as it tries to identify the existence of false negatives, whilst the TS metric tries to improve the ratio of true positives to false positives.
 \begin{equation}
     SS_i = \sideset{}{}\sum_{j=1}^{J_i} R_{i,j}
     \label{eq:SS}
@@ -271,11 +289,11 @@ We used the application of person detection using CNNs to advocate our method in
 %
 The effectiveness of trustworthiness detection in predictions using the trustworthiness score (TS) method is evaluated against model confidence (MC) as our baseline. 
 %
-The baseline for assessing the effectiveness of the suspiciousness score in detecting suspicious frames is also based on MC.
+The baseline for assessing the effectiveness of the suspiciousness score (SS) in detecting suspicious frames is also evaluated against MC.
 %
-In this case the baseline considers a frame to be suspicious if the main classifier outputs predictions with model confidence below the model confidence threshold. 
+For SS case, the baseline considers a frame to be suspicious if the main classifier outputs predictions with model confidence below the model confidence threshold. 
 %
-In the rest of this section we discuss further details for our experimentation setup.
+In the rest of this section we discuss further details for our experimentation setup. Code is available at this repository: \url{https://github.com/Abanoub-G/TrustworthinessScore}
 
 \subsubsection{Main Classifier}
 For any given application, the \textit{main classifier} is the CNN responsible for detecting the object of interest, in this case study the object of interest is a person. 
@@ -333,30 +351,30 @@ There are two hyperparameters associated with the trustworthiness score (TS): $\
 \section{Results and Discussion} \label{sec:results}
 To evaluate our method we analyse against ground truth the True Positives (TP), False Positives (FP) and False Negatives (FN) for trustworthy predictions based on 1) the model confidence only then 2) the trustworthiness score.  
 %
-The metrics often used to analyse TP, FP and FN are Precision, Recall and F1 score. Precision is calculated as $\frac{TP}{TP+FP}$  which is meant to convey how many of the predictions are accurate out of all predictions. Recall on the other hand expresses the rate of the classifier getting correct predictions. This is calculated as $\frac{TP}{TP+FN}$. Often as one tries to increase Precision, Recall tends to decrease as a result. Ideally one aims to maximise both Precision and Recall. The F1 score is used to express the maximisation of both precision and recall simultaneously. This is given by $\frac{2\cdot Precision\cdot Recall}{Precision + Recall}$.
+The metrics often used to analyse TP, FP and FN are Precision, Recall and F1 score. Precision is calculated as $\frac{TP}{TP+FP}$  which is meant to convey how many of the predictions are accurate out of all predictions. Recall on the other hand, expresses the rate of the classifier getting correct predictions. This is calculated as $\frac{TP}{TP+FN}$. Often as one tries to increase Precision, Recall tends to decrease as a result. Ideally one aims to maximise both Precision and Recall. The F1 score is used to express the maximisation of both precision and recall simultaneously. This is given by $\frac{2\cdot Precision\cdot Recall}{Precision + Recall}$.
 %
 The aim of our approach is to improve Precision whilst keeping the F1 Score approximately the same or improving it. 
 %
-Therefore, in our results we mainly focus on Precision improvement but we also plot the F1 score analyse for any significant changes in the F1 score. 
+Therefore, we mainly focus on Precision improvements but we also monitor F1 score. 
 %
 
 
 \begin{figure*}[h]
     \centering
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/INRIA_exp_20_varying_features_.pdf}
         \caption{INRIA Person}
     \end{subfigure}
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/COCO_exp_19_varying_features_.pdf}
         \caption{COCO}
     \end{subfigure}
 
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/INRIA_exp_20_Precision.pdf}
         \caption{INRIA Person}
     \end{subfigure}
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/COCO_exp_19_Precision.pdf}
         \caption{COCO}
     \end{subfigure}
@@ -366,20 +384,20 @@ Therefore, in our results we mainly focus on Precision improvement but we also p
 
 \begin{figure*}[h]
     \centering
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/INRIA_exp_20_F1Score_SUS_VS_MC_untrustworthy_predictions.pdf}
         \caption{INRIA Person}
     \end{subfigure}
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/COCO_exp_19_F1Score_SUS_VS_MC_untrustworthy_predictions.pdf}
         \caption{COCO}
     \end{subfigure}
 
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/INRIA_exp_20_Precision_SUS_VS_MC_untrustworthy_predictions.pdf}
         \caption{INRIA Person}
     \end{subfigure}
-    \begin{subfigure}{0.43\textwidth}
+    \begin{subfigure}{0.42\textwidth}
         \includegraphics[width=1\textwidth]{other/figures/COCO_exp_19_Precision_SUS_VS_MC_untrustworthy_predictions.pdf}
         \caption{COCO}
     \end{subfigure}
@@ -389,15 +407,15 @@ Therefore, in our results we mainly focus on Precision improvement but we also p
 \end{figure*}
 %
 \subsection{Features specifications sufficiency}
-Under representation of objects using features specifications can naturally lead to the F1 Score based on TS to be less than on MC. Therefore, the first criterion we assess is the sufficiency of features used to represent the object being classified.
+Under representation of objects using features specifications can lead to F1 Score based on TS to be less than on MC. Therefore, the first criterion we assess is the sufficiency of features used to represent the object being classified.
 %
-Figure~\ref{detect_trustworthiness} (a) to (b) shows the F1 score of the main classifier for the INRIA dataset and the COCO dataset. The F1 score when relying on the model confidence alone to approve of trustworthy predictions is shown by the dotted line. The bars represent the F1 score when relying on the TS to approve of predictions made by the main classifier. The bars are shown for three TS setups, in each setup a feature specification is added incrementally. 
+Figure~\ref{detect_trustworthiness} (a) to (b) shows the F1 score of the main classifier for INRIA and COCO datasets. The F1 score when relying on model confidence alone to approve of trustworthy predictions is shown by the dotted line. The bars represent F1 score when relying on TS to approve of predictions made by the main classifier. The bars are shown for three TS setups, in each setup a feature specification is added incrementally. 
 %
 The results are shown for different accuracies of the main classifier. 
 %
-As can be seen for both datasets in Figure~\ref{detect_trustworthiness}, the F1 score for our TS method gives poorer performance than the MC when using only the face as a feature specification, with a slight increase when adding the hand feature specification, and then surpasses the MC performance when adding in the legs feature specification. 
+As can be seen for both datasets in Figure~\ref{detect_trustworthiness}, the F1 score for our TS method gives poorer performance than MC when using only face as a feature specification, with a slight increase when adding hand feature specification, and then surpasses the MC performance when adding in legs feature specification. 
 %
-This shows how sufficient representation of an object using feature specifications is crucial for the effectiveness of our approach.
+This shows how sufficient representation of an object using feature specifications is crucial for effectiveness of our approach.
 
 \subsection{Detect Trustworthiness}
 Figure~\ref{detect_trustworthiness} (c) to (d), shows how the performance based on precision changes with the accuracy of the main classifier for both the INRIA and the COCO datasets. It can be noticed that the trustworthiness score consistently performs better than the model confidence alone, with the amount of improvement decreasing as the accuracy of the main classifier increases. 
@@ -407,9 +425,9 @@ It can be observed using Figures ~\ref{detect_trustworthiness} (a) to (d), that 
 Observing the precision plots in Figure ~\ref{detect_trustworthiness} our method provides an improvement of approximately 40\% for low model confidence thresholds and diminishes to zero for high model confidence thresholds, averaging to $\approx 20$\% improvement when averaged across different model confidence thresholds.
 
 \subsection{Detect Suspiciousness} 
-Similar to results shown for detect trustworthiness, Figure~\ref{detect_suspiciousness} (a) to (d) show cases the effectiveness of the TS metric if modified to the suspiciousness score to calculate the suspiciousness in a frame. 
+Similar to results shown for detect trustworthiness, Figure~\ref{detect_suspiciousness} (a) to (d) show cases the effectiveness of the SS metric to calculate the suspiciousness in a frame. 
 %This is compared against the model confidence as our baseline. 
-As can be seen the TS approach provides a significant improvement compared to relying on MC only. Similar to our observation in detect trustworthiness, this effectiveness diminishes as the model confidence threshold of main classifier increases.
+As can be seen the SS provides a significant improvement compared to relying on MC only. Similar to our observation in detect trustworthiness, this effectiveness diminishes as the model confidence threshold of main classifier increases.
 %
 Examining the precision plots in Figure ~\ref{detect_suspiciousness} our method provides an improvement of approximately 10\% for low model confidence thresholds and diminishes to zero for high model confidence thresholds, averaging to approximately 5\% improvement when averaged across different model confidence thresholds.
 
@@ -456,9 +474,8 @@ Overall, our method showed an improvement compared to using model confidence of 
 %
 Our method provides an averaged improvement of 20\% and 5\% for detecting trustworthiness and suspiciousness respectively. 
 
-
 \section*{Acknowledgments}
 This research is part of an iCASE PhD funded by EPSRC and Thales UK. 
 Kerstin Eder was supported in part by the UKRI Trustworthy Autonomous Systems Node (grant number EP/V026518/1).
 %
-Thanks to Edwin Simpson from University of Bristol and Darryl Hond from Thales for helping with reviewing.
+Thanks to Edwin Simpson from University of Bristol for helping with reviewing.

@@ -11,9 +11,9 @@ matplotlib.rcParams.update({'font.size': 12})
 # ===========================================
 # == Fill info below
 # ===========================================
-DATASET_NAME =   'COCO' #'INRIA'  #'COCO' #'INRIA'  
+DATASET_NAME =   'INRIA' #'COCO' #'INRIA'  #'COCO' #'INRIA'  
 
-f_n = 19#20#19
+f_n = 20#19#20#19
 
 # Accuracy_summary_file_name  = "results_summary_"+str(f_n)+"_1.csv"
 # Consensus_summary_file_name = "results_summary_"+str(f_n)+"_2.csv"
@@ -145,7 +145,7 @@ for based_on in ["untrustworthy_predictions"]:
 	y = best_Precision_SUS[2:-1]
 	print(x)
 	print(y)
-	plt.plot(x, y, '-k', linewidth='1.5',label= 'TS') #'Precision SUS')
+	plt.plot(x, y, '-k', linewidth='1.5',label= 'SS') #'Precision SUS')
 
 	# Plt MC Precision
 	x = MC_array[2:-1]
@@ -165,7 +165,7 @@ for based_on in ["untrustworthy_predictions"]:
 	ax.legend()
 	plt.xlabel("Model Confidence Threshold")
 	plt.ylabel("Precision")
-	fig.savefig("plots/inestigate_sus_3/"+DATASET_NAME+'_exp_'+str(f_n)+'_Precision_SUS_VS_MC_'+based_on+'.pdf')
+	fig.savefig("plots/inestigate_sus_4/"+DATASET_NAME+'_exp_'+str(f_n)+'_Precision_SUS_VS_MC_'+based_on+'.pdf')
 
 	plt.figure().clear()
 	plt.close()
@@ -179,7 +179,7 @@ for based_on in ["untrustworthy_predictions"]:
 	# Plt F1_Score
 	x = MC_array[2:-1]
 	y = best_F1_SUS[2:-1]
-	plt.plot(x, y, '-k', linewidth='1.5',label= 'TS')
+	plt.plot(x, y, '-k', linewidth='1.5',label= 'SS')
 	
 	# Plt MC F1_Score
 	x = MC_array[2:-1]
@@ -192,5 +192,5 @@ for based_on in ["untrustworthy_predictions"]:
 	ax.legend()
 	plt.xlabel("Model Confidence Threshold")
 	plt.ylabel("F1 Score")
-	fig.savefig("plots/inestigate_sus_3/"+DATASET_NAME+'_exp_'+str(f_n)+'_F1Score_SUS_VS_MC_'+based_on+'.pdf')
+	fig.savefig("plots/inestigate_sus_4/"+DATASET_NAME+'_exp_'+str(f_n)+'_F1Score_SUS_VS_MC_'+based_on+'.pdf')
 
