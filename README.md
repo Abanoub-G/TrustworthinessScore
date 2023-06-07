@@ -1,4 +1,4 @@
-# Trustworthiness Score to evaluate predictions
+# A Trustworthiness Score to evaluate CNNs predictions
 
 This is the official repository for our paper: [A Trustworthiness Score to Evaluate CNNs Predictions](https://arxiv.org/abs/2301.08839)
 
